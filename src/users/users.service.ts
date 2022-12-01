@@ -14,6 +14,7 @@ export class UsersService {
     }
 
     findOne(id: number) {
+        if (!id) return null;
         return this.repo.findOneBy({ id });
     }
 
@@ -27,11 +28,7 @@ export class UsersService {
             throw new Error('User not found');
         }
 
-        console.log('Attrs: ', attrs);
-
         Object.assign(user, attrs);
-
-        console.log('User: ', user);
 
         return this.repo.save(user);
     }
