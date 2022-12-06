@@ -4,6 +4,7 @@
 
 # Local files
 db.sqlite
+.env*
 
 # Logs
 logs
