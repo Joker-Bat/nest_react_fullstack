@@ -1,3 +1,5 @@
+// We aren't using this file anywhere, as we replaced this functionality to current-user.middleware.ts file
+
 import {
     NestInterceptor,
     ExecutionContext,
@@ -17,7 +19,7 @@ export class CurrentUserInterceptor implements NestInterceptor {
         next: CallHandler,
     ): Promise<Observable<any>> {
         const request = context.switchToHttp().getRequest();
-        const { userId } = request.session;
+        const { userId } = request.session || {};
 
         if (userId) {
             const user = this.usersService.findOne(userId);
