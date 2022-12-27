@@ -8,6 +8,7 @@ import {
     OneToMany,
 } from 'typeorm';
 
+import { Role } from '../enums/role.enum';
 import { Report } from '../reports/report.entity';
 
 @Entity()
@@ -21,8 +22,8 @@ export class User {
     @Column()
     password: string;
 
-    @Column({ default: false })
-    admin: boolean;
+    @Column()
+    role: Role;
 
     @OneToMany(() => Report, (report) => report.user)
     reports: Report[];

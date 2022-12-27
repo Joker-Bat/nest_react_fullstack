@@ -6,6 +6,7 @@ import {
 import { randomBytes, scrypt as _scrypt } from 'crypto';
 import { promisify } from 'util';
 
+import { Role } from '../enums/role.enum';
 import { UsersService } from './users.service';
 
 const scrypt = promisify(_scrypt);
@@ -14,7 +15,7 @@ const scrypt = promisify(_scrypt);
 export class AuthService {
     constructor(private usersService: UsersService) {}
 
-    async signup(email: string, password: string) {
+    async signup(email: string, password: string, role: Role) {
         const users = await this.usersService.find(email);
 
         if (users.length > 0) {
@@ -31,7 +32,7 @@ export class AuthService {
         const result = salt + '.' + hash.toString('hex');
 
         // Create new user and save it
-        const user = await this.usersService.create(email, result);
+        const user = await this.usersService.create(email, result, role);
 
         // return the user
         return user;

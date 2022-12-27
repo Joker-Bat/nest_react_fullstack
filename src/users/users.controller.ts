@@ -9,7 +9,9 @@ import {
     Delete,
     NotFoundException,
     Session,
-    UseGuards,
+    ParseIntPipe,
+    HttpCode,
+    UnauthorizedException,
 } from '@nestjs/common';
 
 import { CreateUserDto } from './dtos/create-user.dto';
@@ -20,7 +22,8 @@ import { UserDto } from './dtos/user.dto';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { User } from './user.entity';
-import { AuthGuard } from '../guards/auth.guard';
+import { Roles } from 'src/decorators/roles.decorator';
+import { Role } from 'src/enums/role.enum';
 
 @Controller('auth')
 @Serialize(UserDto)
@@ -36,32 +39,42 @@ export class UsersController {
     // }
 
     @Get('/whoami')
-    @UseGuards(AuthGuard)
     whoAmI(@CurrentUser() user: User) {
+        if (!user)
+            throw new UnauthorizedException('Not authenticated, login again.');
         return user;
     }
 
     @Post('/signout')
+    @HttpCode(200)
     signOut(@Session() session: any) {
-        session.userId = null;
+        session.user = null;
     }
 
     @Post('/signup')
     async createUser(@Body() body: CreateUserDto, @Session() session: any) {
-        const user = await this.authService.signup(body.email, body.password);
-        session.userId = user.id;
+        const user = await this.authService.signup(
+            body.email,
+            body.password,
+            body.role,
+        );
+        session.user = {
+            id: user.id,
+        };
         return user;
     }
 
     @Post('/signin')
     async signin(@Body() body: CreateUserDto, @Session() session: any) {
         const user = await this.authService.signin(body.email, body.password);
-        session.userId = user.id;
+        session.user = {
+            id: user.id,
+        };
         return user;
     }
 
     @Get('/:id')
-    @UseGuards(AuthGuard)
+    @Roles(Role.User, Role.Admin)
     async findUser(@Param('id') id: string) {
         const user = await this.usersService.findOne(parseInt(id));
 
@@ -77,13 +90,18 @@ export class UsersController {
     }
 
     @Delete('/:id')
+    @Roles(Role.Admin)
     removeUser(@Param('id') id: string) {
         return this.usersService.remove(parseInt(id));
     }
 
     @Patch('/:id')
-    updateUser(@Param('id') id: string, @Body() body: UpdateUserDto) {
-        return this.usersService.update(parseInt(id), body);
+    @Roles(Role.User, Role.Admin)
+    updateUser(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() body: UpdateUserDto,
+    ) {
+        return this.usersService.update(id, body);
     }
 
     @Get('/colors/:color')

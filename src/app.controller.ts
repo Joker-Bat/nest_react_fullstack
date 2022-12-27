@@ -6,7 +6,7 @@ export class AppController {
     constructor(private readonly appService: AppService) {}
 
     @Get('/')
-    sendHello() {
+    getHello() {
         return 'Hello World!';
     }
 }
