@@ -50,11 +50,15 @@ import { Report } from './reports/report.entity';
     ],
 })
 export class AppModule {
+    constructor(private configService: ConfigService) {}
+
     configure(consumer: MiddlewareConsumer) {
         consumer
             .apply(
                 cookieSession({
-                    keys: ['keyToEncryptCookie'],
+                    name: 'session',
+                    keys: [this.configService.get('COOKIE_KEY')],
+                    maxAge: 1000 * 60 * 60,
                 }),
             )
             .forRoutes('*');

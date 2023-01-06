@@ -45,7 +45,7 @@ export class UsersController {
         return user;
     }
 
-    @Post('/signout')
+    @Get('/signout')
     @HttpCode(200)
     signOut(@Session() session: any) {
         session.user = null;
@@ -91,8 +91,8 @@ export class UsersController {
 
     @Delete('/:id')
     @Roles(Role.Admin)
-    removeUser(@Param('id') id: string) {
-        return this.usersService.remove(parseInt(id));
+    removeUser(@Param('id', ParseIntPipe) id: number) {
+        return this.usersService.remove(id);
     }
 
     @Patch('/:id')
@@ -102,15 +102,5 @@ export class UsersController {
         @Body() body: UpdateUserDto,
     ) {
         return this.usersService.update(id, body);
-    }
-
-    @Get('/colors/:color')
-    setColor(@Param('color') color: string, @Session() session: any) {
-        session.color = color;
-    }
-
-    @Get('/colors')
-    getColor(@Session() session: any) {
-        return session.color;
     }
 }

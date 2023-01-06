@@ -44,4 +44,9 @@ export class ReportsService {
         report.approved = approved;
         return this.repo.save(report);
     }
+
+    async getAllReports() {
+        const reports = await this.repo.find();
+        return reports;
+    }
 }

@@ -16,6 +16,7 @@ import { RolesGuard } from '../guards/roles.guard';
         UsersService,
         AuthService,
         {
+            // This APP_GUARD will be applied globally
             provide: APP_GUARD,
             useClass: RolesGuard,
         },

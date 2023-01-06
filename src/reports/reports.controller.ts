@@ -17,8 +17,8 @@ import { Serialize } from '../interceptors/serialize.interceptor';
 import { ReportDto } from './dtos/report.dto';
 import { ApproveReportDto } from './dtos/approve-report.dto';
 import { GetEstimateDto } from './dtos/get-estimate.dto';
-import { Roles } from 'src/decorators/roles.decorator';
-import { Role } from 'src/enums/role.enum';
+import { Roles } from '../decorators/roles.decorator';
+import { Role } from '../enums/role.enum';
 
 @Controller('reports')
 export class ReportsController {
@@ -30,7 +30,7 @@ export class ReportsController {
     }
 
     @Post()
-    @Roles(Role.User)
+    @Roles(Role.User, Role.Admin)
     @Serialize(ReportDto)
     createReport(@Body() body: CreateReportDto, @CurrentUser() user: User) {
         return this.reportsService.create(body, user);
@@ -43,5 +43,11 @@ export class ReportsController {
         @Body() body: ApproveReportDto,
     ) {
         return this.reportsService.changeApproval(id, body.approved);
+    }
+
+    @Get('/list')
+    @Roles(Role.User, Role.Admin)
+    getList() {
+        return this.reportsService.getAllReports();
     }
 }
