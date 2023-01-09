@@ -28,11 +28,11 @@ import { join } from 'path';
             useFactory: (config: ConfigService) => {
                 return {
                     type: 'mysql',
-                    host: config.get('MYSQLHOST'),
-                    port: config.get('MYSQLPORT'),
-                    username: config.get<string>('MYSQLUSER'),
-                    password: config.get<string>('MYSQLPASSWORD'),
-                    database: config.get<string>('MYSQLDATABASE'),
+                    host: process.env.MYSQLHOST,
+                    port: parseInt(process.env.MYSQLPORT, 10),
+                    username: process.env.MYSQLUSER,
+                    password: process.env.MYSQLPASSWORD,
+                    database: process.env.MYSQLDATABASE,
                     entities: [User, Report],
                     // synchronize: true,
                 };
@@ -67,7 +67,7 @@ export class AppModule {
             .apply(
                 cookieSession({
                     name: 'session',
-                    keys: [this.configService.get('COOKIE_KEY')],
+                    keys: [process.env.COOKIE_KEY],
                     maxAge: 1000 * 60 * 60,
                 }),
             )
