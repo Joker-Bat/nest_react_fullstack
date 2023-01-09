@@ -1,7 +1,8 @@
 import { MiddlewareConsumer, Module, ValidationPipe } from '@nestjs/common';
 import { APP_PIPE } from '@nestjs/core';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { TypeOrmModule } from '@nestjs/typeorm';
 const cookieSession = require('cookie-session');
 
 import { AppController } from './app.controller';
@@ -10,9 +11,14 @@ import { UsersModule } from './users/users.module';
 import { ReportsModule } from './reports/reports.module';
 import { User } from './users/user.entity';
 import { Report } from './reports/report.entity';
+import { join } from 'path';
 
 @Module({
     imports: [
+        ServeStaticModule.forRoot({
+            rootPath: join(__dirname, '..', 'client', 'dist'),
+            exclude: ['/api/*'],
+        }),
         ConfigModule.forRoot({
             isGlobal: true,
             envFilePath: `.env.${process.env.NODE_ENV}`,
@@ -21,10 +27,14 @@ import { Report } from './reports/report.entity';
             inject: [ConfigService],
             useFactory: (config: ConfigService) => {
                 return {
-                    type: 'sqlite',
+                    type: 'mysql',
+                    host: config.get('DB_HOST'),
+                    port: config.get('DB_PORT'),
+                    username: config.get<string>('DB_USERNAME'),
+                    password: config.get<string>('DB_PASSWORD'),
                     database: config.get<string>('DB_NAME'),
-                    synchronize: true,
                     entities: [User, Report],
+                    // synchronize: true,
                 };
             },
         }),
