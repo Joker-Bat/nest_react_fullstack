@@ -28,11 +28,11 @@ import { join } from 'path';
             useFactory: (config: ConfigService) => {
                 return {
                     type: 'mysql',
-                    host: config.get('DB_HOST'),
-                    port: config.get('DB_PORT'),
-                    username: config.get<string>('DB_USERNAME'),
-                    password: config.get<string>('DB_PASSWORD'),
-                    database: config.get<string>('DB_NAME'),
+                    host: config.get('MYSQLHOST'),
+                    port: config.get('MYSQLPORT'),
+                    username: config.get<string>('MYSQLUSER'),
+                    password: config.get<string>('MYSQLPASSWORD'),
+                    database: config.get<string>('MYSQLDATABASE'),
                     entities: [User, Report],
                     // synchronize: true,
                 };
