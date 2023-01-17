@@ -8,7 +8,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 
 import { CreateReportDto } from './dtos/create-report.dto';
 import { ReportsService } from './reports.service';
@@ -33,6 +33,7 @@ export class ReportsController {
 
   @Post()
   @Roles(Role.User, Role.Admin)
+  @ApiCookieAuth()
   @Serialize(ReportDto)
   createReport(@Body() body: CreateReportDto, @CurrentUser() user: User) {
     return this.reportsService.create(body, user);
@@ -40,6 +41,7 @@ export class ReportsController {
 
   @Patch('/:id')
   @Roles(Role.Admin)
+  @ApiCookieAuth()
   approveReport(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: ApproveReportDto,
@@ -49,6 +51,7 @@ export class ReportsController {
 
   @Get('/list')
   @Roles(Role.User, Role.Admin)
+  @ApiCookieAuth()
   getList() {
     return this.reportsService.getAllReports();
   }
