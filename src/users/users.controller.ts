@@ -26,8 +26,11 @@ import { User } from './user.entity';
 import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/enums/role.enum';
 import { ResetPasswordDto } from './dtos/reset-password.dto';
+import { SigninUserDto } from './dtos/signin-user.dto';
+import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 
 @Controller('auth')
+@ApiTags('users')
 @Serialize(UserDto)
 export class UsersController {
   constructor(
@@ -67,7 +70,7 @@ export class UsersController {
   }
 
   @Post('/signin')
-  async signin(@Body() body: CreateUserDto, @Session() session: any) {
+  async signin(@Body() body: SigninUserDto, @Session() session: any) {
     const user = await this.authService.signin(body.email, body.password);
     session.user = {
       id: user.id,
@@ -77,6 +80,7 @@ export class UsersController {
 
   @Get('/:id')
   @Roles(Role.User, Role.Admin)
+  @ApiCookieAuth()
   async findUser(@Param('id') id: string) {
     const user = await this.usersService.findOne(parseInt(id));
 
@@ -93,12 +97,14 @@ export class UsersController {
 
   @Delete('/:id')
   @Roles(Role.Admin)
+  @ApiCookieAuth()
   removeUser(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.remove(id);
   }
 
   @Patch('/update')
   @Roles(Role.User, Role.Admin)
+  @ApiCookieAuth()
   updateUser(@CurrentUser() user: User, @Body() body: UpdateUserDto) {
     if (!user?.id) throw new UnauthorizedException();
 
@@ -107,6 +113,7 @@ export class UsersController {
 
   @Patch('/update/:id')
   @Roles(Role.Admin)
+  @ApiCookieAuth()
   updateUserWithId(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateUserDto,
@@ -116,6 +123,7 @@ export class UsersController {
 
   @Put('/reset_password')
   @Roles(Role.User, Role.Admin)
+  @ApiCookieAuth()
   resetPassword(@CurrentUser() user: User, @Body() body: ResetPasswordDto) {
     if (!user?.id) throw new UnauthorizedException();
 

@@ -1,13 +1,17 @@
 import { IsString, IsEmail, IsEnum } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 import { Role } from '../../enums/role.enum';
 
 export class CreateUserDto {
-    @IsEmail()
-    email: string;
+  @IsEmail()
+  @ApiProperty()
+  email: string;
 
-    @IsString()
-    password: string;
+  @IsString()
+  @ApiProperty()
+  password: string;
 
-    @IsEnum(Role)
-    role: Role = Role.User;
+  @IsEnum(Role)
+  @ApiProperty({ enum: Role, enumName: 'role' })
+  role: Role = Role.User;
 }
