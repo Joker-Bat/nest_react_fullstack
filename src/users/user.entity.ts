@@ -1,11 +1,12 @@
+import { IsOptional } from 'class-validator';
 import {
-    AfterInsert,
-    AfterUpdate,
-    AfterRemove,
-    Entity,
-    Column,
-    PrimaryGeneratedColumn,
-    OneToMany,
+  AfterInsert,
+  AfterUpdate,
+  AfterRemove,
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
 } from 'typeorm';
 
 import { Role } from '../enums/role.enum';
@@ -13,33 +14,41 @@ import { Report } from '../reports/report.entity';
 
 @Entity()
 export class User {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    email: string;
+  @Column()
+  email: string;
 
-    @Column()
-    password: string;
+  @Column()
+  password: string;
 
-    @Column()
-    role: Role;
+  @Column()
+  role: Role;
 
-    @OneToMany(() => Report, (report) => report.user)
-    reports: Report[];
+  @Column({ default: '' })
+  @IsOptional()
+  name: string;
 
-    @AfterInsert()
-    logInsert() {
-        console.log('Inserted new user with id', this.id);
-    }
+  @Column({ default: '' })
+  @IsOptional()
+  phone: string;
 
-    @AfterUpdate()
-    logUpdate() {
-        console.log('Updated user with id', this.id);
-    }
+  @OneToMany(() => Report, (report) => report.user)
+  reports: Report[];
 
-    @AfterRemove()
-    logRemove() {
-        console.log('Removed user with id', this.id);
-    }
+  @AfterInsert()
+  logInsert() {
+    console.log('Inserted new user with id', this.id);
+  }
+
+  @AfterUpdate()
+  logUpdate() {
+    console.log('Updated user with id', this.id);
+  }
+
+  @AfterRemove()
+  logRemove() {
+    console.log('Removed user with id', this.id);
+  }
 }
